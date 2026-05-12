@@ -3,8 +3,20 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>
+#include <fstream>
+#include <limits>
 
 int main() {
+
+    std::ifstream testFile("logistics.csv");
+    if (!testFile.is_open()) {
+        std::cout << "SYSTEM ERROR: Database file not found. Creating new file...\n";
+    }
+    else {
+        std::cout << "Database loaded successfully.\n";
+    }
+    testFile.close();
 
     std::vector<User> users;
     User testUser;
@@ -19,9 +31,13 @@ int main() {
         std::string inputPassword;
 
         std::cout << "Enter username: ";
-        std::cin >> inputUsername;
+        std::getline(std::cin, inputUsername);
         std::cout << "Enter password: ";
-        std::cin >> inputPassword;
+        std::getline(std::cin, inputPassword);
+        if (inputUsername.empty() || inputPassword.empty()) {
+            std::cout << "Username and password cannot be empty. Try again.\n";
+            continue;
+        }
 
         for (int i = 0; i < users.size(); i++) {
             if (inputUsername == users[i].username && 
