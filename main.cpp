@@ -71,12 +71,12 @@ int main() {
             choice = toupper(choice);
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             switch (choice) {
-                case 'C': createDelivery(); break;
-                case 'R': readDeliveries(); break;
-                case 'U': updateDeliveryStatus(); break;
-                case 'D': deleteDelivery(); break;
-                case 'S': searchByTracking(); break;
-                case 'T': sortByStatus(); break;
+                case 'C': createDelivery(deliveries); break;
+                case 'R': readDeliveries(deliveries); break;
+                case 'U': updateDeliveryStatus(deliveries); break;
+                case 'D': deleteDelivery(deliveries); break;
+                case 'S': searchByTracking(deliveries); break;
+                case 'T': sortByStatus(deliveries); break;
                 case 'L': loggedIn = false; break;
                 case 'E': saveToFile(users, deliveries); std::cout << "Exiting...\n"; break;
                 default: std::cout << "Invalid choice.\n";
@@ -88,3 +88,4 @@ int main() {
 
     return 0;
 }
+

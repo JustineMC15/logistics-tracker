@@ -20,9 +20,7 @@ int getStatusPriority(std::string status) {
 
 // CREATE DELIVERY (C)
 
-void createDelivery() {
-
-    std::ofstream file("logistics.csv", std::ios::app);
+void createDelivery(std::vector<Delivery>& logistics) {
 
     Delivery d;
 
@@ -44,198 +42,93 @@ void createDelivery() {
     std::cout << "Status (Pending / In Transit / Delivered): ";
     getline(std::cin, d.status);
 
-    file << "DELIVERY," << d.trackingNumber << ","
-        << d.senderName << ","
-        << d.receiverName << ","
-        << d.origin << ","
-        << d.destination << ","
-        << d.status << "\n";
-
-    file.close();
+    logistics.push_back(d);
 
     std::cout << "Delivery created successfully!\n";
 }
 
 // READ ALL DELIVERIES (R)
 
-void readDeliveries() {
-
-    std::ifstream file("logistics.csv");
-
-    if (!file.is_open()) {
+void readDeliveries(const std::vector<Delivery>& logistics) {
+    if (logistics.empty()) {
         std::cout << "No records found.\n";
         return;
     }
-
-    std::string line;
-
-    while (getline(file, line)) {
-        std::stringstream ss(line);
-        std::string tag;
-        getline(ss, tag, ',');
-        if (tag != "DELIVERY") continue;
-        Delivery d;
-        getline(ss, d.trackingNumber, ',');
-        getline(ss, d.senderName, ',');
-        getline(ss, d.receiverName, ',');
-        getline(ss, d.origin, ',');
-        getline(ss, d.destination, ',');
-        getline(ss, d.status, ',');
-
+    for (int i = 0; i < logistics.size(); i++) {
         std::cout << "\n----------------------\n";
-        std::cout << "Tracking: " << d.trackingNumber << "\n";
-        std::cout << "Sender: " << d.senderName << "\n";
-        std::cout << "Receiver: " << d.receiverName << "\n";
-        std::cout << "Origin: " << d.origin << "\n";
-        std::cout << "Destination: " << d.destination << "\n";
-        std::cout << "Status: " << d.status << "\n";
+        std::cout << "Tracking: " << logistics[i].trackingNumber << "\n";
+        std::cout << "Sender: " << logistics[i].senderName << "\n";
+        std::cout << "Receiver: " << logistics[i].receiverName << "\n";
+        std::cout << "Origin: " << logistics[i].origin << "\n";
+        std::cout << "Destination: " << logistics[i].destination << "\n";
+        std::cout << "Status: " << logistics[i].status << "\n";
     }
-
-    file.close();
 }
 
 // SEARCH BY TRACKING (S) - LINEAR SEARCH
 
-void searchByTracking() {
-
-    std::ifstream file("logistics.csv");
-
-    if (!file.is_open()) {
+void searchByTracking(const std::vector<Delivery>& logistics) {
+    if (logistics.empty()) {
         std::cout << "No records found.\n";
         return;
     }
-
     std::string input;
     std::cout << "Enter tracking number: ";
     std::cin >> input;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-    std::string line;
     bool found = false;
-
-    while (getline(file, line)) {
-        std::stringstream ss(line);
-        std::string tag;
-        getline(ss, tag, ',');
-        if (tag != "DELIVERY") continue;
-        Delivery d;
-        getline(ss, d.trackingNumber, ',');
-        getline(ss, d.senderName, ',');
-        getline(ss, d.receiverName, ',');
-        getline(ss, d.origin, ',');
-        getline(ss, d.destination, ',');
-        getline(ss, d.status, ',');
-
-        if (d.trackingNumber == input) {
-
+    for (int i = 0; i < logistics.size(); i++) {
+        if (logistics[i].trackingNumber == input) {
             std::cout << "\n=== DELIVERY FOUND ===\n";
-            std::cout << "Tracking: " << d.trackingNumber << "\n";
-            std::cout << "Sender: " << d.senderName << "\n";
-            std::cout << "Receiver: " << d.receiverName << "\n";
-            std::cout << "Origin: " << d.origin << "\n";
-            std::cout << "Destination: " << d.destination << "\n";
-            std::cout << "Status: " << d.status << "\n";
-
+            std::cout << "Tracking: " << logistics[i].trackingNumber << "\n";
+            std::cout << "Sender: " << logistics[i].senderName << "\n";
+            std::cout << "Receiver: " << logistics[i].receiverName << "\n";
+            std::cout << "Origin: " << logistics[i].origin << "\n";
+            std::cout << "Destination: " << logistics[i].destination << "\n";
+            std::cout << "Status: " << logistics[i].status << "\n";
             found = true;
             break;
         }
     }
-
     if (!found) {
         std::cout << "Delivery not found.\n";
     }
-
-    file.close();
 }
 
 // SORT BY STATUS (T) - BUBBLE SORT
 
-void sortByStatus() {
-
-    std::ifstream file("logistics.csv");
-
-    if (!file.is_open()) {
+void sortByStatus(std::vector<Delivery> logistics) {
+    if (logistics.empty()) {
         std::cout << "No records found.\n";
         return;
     }
 
-    std::vector<Delivery> deliveries;
-    std::string line;
-
-    // Load file into vector
-    while (getline(file, line)) {
-        std::stringstream ss(line);
-        std::string tag;
-        getline(ss, tag, ',');
-        if (tag != "DELIVERY") continue;
-        Delivery d;
-        getline(ss, d.trackingNumber, ',');
-        getline(ss, d.senderName, ',');
-        getline(ss, d.receiverName, ',');
-        getline(ss, d.origin, ',');
-        getline(ss, d.destination, ',');
-        getline(ss, d.status, ',');
-
-        deliveries.push_back(d);
-    }
-
-    file.close();
-
     // Bubble Sort
-    for (int i = 0; i < (int)deliveries.size() - 1; i++) {
-
-        for (int j = 0; j < (int)deliveries.size() - i - 1; j++) {
-
-            if (getStatusPriority(deliveries[j].status) >
-                getStatusPriority(deliveries[j + 1].status)) {
-
-                std::swap(deliveries[j], deliveries[j + 1]);
+    for (int i = 0; i < (int)logistics.size() - 1; i++) {
+        for (int j = 0; j < (int)logistics.size() - i - 1; j++) {
+            if (getStatusPriority(logistics[j].status) >
+                getStatusPriority(logistics[j + 1].status)) {
+                std::swap(logistics[j], logistics[j + 1]);
             }
         }
     }
 
     // Display sorted results
     std::cout << "\n=== SORTED BY STATUS ===\n";
-
-    for (auto &d : deliveries) {
-
+    for (int i = 0; i < logistics.size(); i++) {
         std::cout << "\n----------------------\n";
-        std::cout << "Tracking: " << d.trackingNumber << "\n";
-        std::cout << "Status: " << d.status << "\n";
+        std::cout << "Tracking: " << logistics[i].trackingNumber << "\n";
+        std::cout << "Status: " << logistics[i].status << "\n";
     }
 }
 
 // UPDATE STATUS (U)
 
-void updateDeliveryStatus() {
-
-    std::ifstream file("logistics.csv");
-
-    if (!file.is_open()) {
+void updateDeliveryStatus(std::vector<Delivery>& logistics) {
+    if (logistics.empty()) {
         std::cout << "No records found.\n";
         return;
     }
-
-    std::vector<Delivery> deliveries;
-    std::string line;
-
-    while (getline(file, line)) {
-        std::stringstream ss(line);
-        std::string tag;
-        getline(ss, tag, ',');
-        if (tag != "DELIVERY") continue;
-        Delivery d;
-        getline(ss, d.trackingNumber, ',');
-        getline(ss, d.senderName, ',');
-        getline(ss, d.receiverName, ',');
-        getline(ss, d.origin, ',');
-        getline(ss, d.destination, ',');
-        getline(ss, d.status, ',');
-
-        deliveries.push_back(d);
-    }
-
-    file.close();
 
     std::string input;
     std::cout << "Enter tracking number to update: ";
@@ -244,14 +137,10 @@ void updateDeliveryStatus() {
 
     bool found = false;
 
-    for (auto &d : deliveries) {
-
-        if (d.trackingNumber == input) {
-
-            std::cin.ignore();
+    for (int i = 0; i < logistics.size(); i++) {
+        if (logistics[i].trackingNumber == input) {
             std::cout << "New status: ";
-            getline(std::cin, d.status);
-
+            getline(std::cin, logistics[i].status);
             found = true;
             break;
         }
@@ -262,57 +151,16 @@ void updateDeliveryStatus() {
         return;
     }
 
-    std::ofstream out("logistics.csv");
-
-    for (auto &d : deliveries) {
-
-        out << "DELIVERY," << d.trackingNumber << ","
-            << d.senderName << ","
-            << d.receiverName << ","
-            << d.origin << ","
-            << d.destination << ","
-            << d.status << "\n";
-    }
-
-    out.close();
-
     std::cout << "Status updated successfully!\n";
 }
 
 // DELETE DELIVERY (D)
 
-void deleteDelivery() {
-
-    std::ifstream file("logistics.csv");
-
-    if (!file.is_open()) {
+void deleteDelivery(std::vector<Delivery>& logistics) {
+    if (logistics.empty()) {
         std::cout << "No records found.\n";
         return;
     }
-
-    std::vector<Delivery> deliveries;
-    std::string line;
-
-    while (getline(file, line)) {
-
-        std::stringstream ss(line);
-        std::string tag;
-        getline(ss, tag, ',');
-        if (tag != "DELIVERY") continue;
-
-        Delivery d;
-
-        getline(ss, d.trackingNumber, ',');
-        getline(ss, d.senderName, ',');
-        getline(ss, d.receiverName, ',');
-        getline(ss, d.origin, ',');
-        getline(ss, d.destination, ',');
-        getline(ss, d.status, ',');
-
-        deliveries.push_back(d);
-    }
-
-    file.close();
 
     std::string input;
     std::cout << "Enter tracking number to delete: ";
@@ -321,11 +169,9 @@ void deleteDelivery() {
 
     bool removed = false;
 
-    for (int i = 0; i < (int)deliveries.size(); i++) {
-
-        if (deliveries[i].trackingNumber == input) {
-
-            deliveries.erase(deliveries.begin() + i);
+    for (int i = 0; i < (int)logistics.size(); i++) {
+        if (logistics[i].trackingNumber == input) {
+            logistics.erase(logistics.begin() + i);
             removed = true;
             break;
         }
@@ -335,19 +181,6 @@ void deleteDelivery() {
         std::cout << "Delivery not found.\n";
         return;
     }
-
-    std::ofstream out("logistics.csv");
-
-    for (auto &d : deliveries) {
-
-        out << "DELIVERY," << d.trackingNumber << ","
-            << d.senderName << ","
-            << d.receiverName << ","
-            << d.origin << ","
-            << d.destination << ","
-            << d.status << "\n";
-    }
-    out.close();
 
     std::cout << "Delivery deleted successfully!\n";
 }
