@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <limits>
 
 // HELPER FUNCTION
 
@@ -25,8 +26,6 @@ void createDelivery() {
 
     Delivery d;
 
-    std::cin.ignore();
-
     std::cout << "Tracking Number: ";
     getline(std::cin, d.trackingNumber);
 
@@ -45,12 +44,12 @@ void createDelivery() {
     std::cout << "Status (Pending / In Transit / Delivered): ";
     getline(std::cin, d.status);
 
-    file << d.trackingNumber << ","
-         << d.senderName << ","
-         << d.receiverName << ","
-         << d.origin << ","
-         << d.destination << ","
-         << d.status << "\n";
+    file << "DELIVERY," << d.trackingNumber << ","
+        << d.senderName << ","
+        << d.receiverName << ","
+        << d.origin << ","
+        << d.destination << ","
+        << d.status << "\n";
 
     file.close();
 
@@ -71,11 +70,11 @@ void readDeliveries() {
     std::string line;
 
     while (getline(file, line)) {
-
         std::stringstream ss(line);
-
+        std::string tag;
+        getline(ss, tag, ',');
+        if (tag != "DELIVERY") continue;
         Delivery d;
-
         getline(ss, d.trackingNumber, ',');
         getline(ss, d.senderName, ',');
         getline(ss, d.receiverName, ',');
@@ -109,16 +108,17 @@ void searchByTracking() {
     std::string input;
     std::cout << "Enter tracking number: ";
     std::cin >> input;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::string line;
     bool found = false;
 
     while (getline(file, line)) {
-
         std::stringstream ss(line);
-
+        std::string tag;
+        getline(ss, tag, ',');
+        if (tag != "DELIVERY") continue;
         Delivery d;
-
         getline(ss, d.trackingNumber, ',');
         getline(ss, d.senderName, ',');
         getline(ss, d.receiverName, ',');
@@ -164,11 +164,11 @@ void sortByStatus() {
 
     // Load file into vector
     while (getline(file, line)) {
-
         std::stringstream ss(line);
-
+        std::string tag;
+        getline(ss, tag, ',');
+        if (tag != "DELIVERY") continue;
         Delivery d;
-
         getline(ss, d.trackingNumber, ',');
         getline(ss, d.senderName, ',');
         getline(ss, d.receiverName, ',');
@@ -220,11 +220,11 @@ void updateDeliveryStatus() {
     std::string line;
 
     while (getline(file, line)) {
-
         std::stringstream ss(line);
-
+        std::string tag;
+        getline(ss, tag, ',');
+        if (tag != "DELIVERY") continue;
         Delivery d;
-
         getline(ss, d.trackingNumber, ',');
         getline(ss, d.senderName, ',');
         getline(ss, d.receiverName, ',');
@@ -240,6 +240,7 @@ void updateDeliveryStatus() {
     std::string input;
     std::cout << "Enter tracking number to update: ";
     std::cin >> input;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     bool found = false;
 
@@ -265,7 +266,7 @@ void updateDeliveryStatus() {
 
     for (auto &d : deliveries) {
 
-        out << d.trackingNumber << ","
+        out << "DELIVERY," << d.trackingNumber << ","
             << d.senderName << ","
             << d.receiverName << ","
             << d.origin << ","
@@ -295,6 +296,9 @@ void deleteDelivery() {
     while (getline(file, line)) {
 
         std::stringstream ss(line);
+        std::string tag;
+        getline(ss, tag, ',');
+        if (tag != "DELIVERY") continue;
 
         Delivery d;
 
@@ -313,6 +317,7 @@ void deleteDelivery() {
     std::string input;
     std::cout << "Enter tracking number to delete: ";
     std::cin >> input;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     bool removed = false;
 
@@ -335,7 +340,7 @@ void deleteDelivery() {
 
     for (auto &d : deliveries) {
 
-        out << d.trackingNumber << ","
+        out << "DELIVERY," << d.trackingNumber << ","
             << d.senderName << ","
             << d.receiverName << ","
             << d.origin << ","
