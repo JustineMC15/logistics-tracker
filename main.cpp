@@ -8,80 +8,81 @@
 #include <limits>
 
 int main() {
-
     std::ifstream testFile("logistics.csv");
     if (!testFile.is_open()) {
         std::cout << "SYSTEM ERROR: Database file not found. Creating new file...\n";
-    }
-    else {
+    } else {
         std::cout << "Database loaded successfully.\n";
     }
     testFile.close();
 
     std::vector<User> users;
+    std::vector<Delivery> deliveries;
     User testUser;
     testUser.username = "admin";
     testUser.password = "1234";
     users.push_back(testUser);
 
     bool loggedIn = false;
-
-    do {
-        std::string inputUsername;
-        std::string inputPassword;
-
-        std::cout << "Enter username: ";
-        std::getline(std::cin, inputUsername);
-        std::cout << "Enter password: ";
-        std::getline(std::cin, inputPassword);
-        if (inputUsername.empty() || inputPassword.empty()) {
-            std::cout << "Username and password cannot be empty. Try again.\n";
-            continue;
-        }
-
-        for (int i = 0; i < users.size(); i++) {
-            if (inputUsername == users[i].username && 
-                inputPassword == users[i].password) {
-                loggedIn = true;
-                break;
-            }
-        }
-
-        if (!loggedIn) {
-            std::cout << "Invalid username or password. Try again.\n";
-        }
-
-    } while (!loggedIn);
-
-    std::cout << "Login successful! Welcome.\n";
-
-    // Main menu placeholder
     char choice;
-    do {
-        std::cout << "\n=== Logistics Tracker ===\n";
-        std::cout << "[C] Create Delivery\n";
-        std::cout << "[R] Read Deliveries\n";
-        std::cout << "[U] Update Status\n";
-        std::cout << "[D] Delete Delivery\n";
-        std::cout << "[S] Search\n";
-        std::cout << "[T] Sort\n";
-        std::cout << "[L] Logout\n";
-        std::cout << "[E] Exit\n";
-        std::cout << "Enter choice: ";
-        std::cin >> choice;
-        choice = toupper(choice);
 
-        switch (choice) {
-            case 'C': ; break;
-            case 'R': ; break;
-            case 'U': ; break;
-            case 'D': ; break;
-            case 'S': ; break;
-            case 'T': ; break;
-            case 'L': ; break;
-            case 'E': ; break;
-            default: std::cout << "Invalid choice.\n";
-        }
+    do {
+        loggedIn = false;
+
+        // LOGIN LOOP
+        do {
+            std::string inputUsername;
+            std::string inputPassword;
+            std::cout << "Enter username: ";
+            std::getline(std::cin, inputUsername);
+            std::cout << "Enter password: ";
+            std::getline(std::cin, inputPassword);
+            if (inputUsername.empty() || inputPassword.empty()) {
+                std::cout << "Username and password cannot be empty. Try again.\n";
+                continue;
+            }
+            for (int i = 0; i < users.size(); i++) {
+                if (inputUsername == users[i].username &&
+                    inputPassword == users[i].password) {
+                    loggedIn = true;
+                    break;
+                }
+            }
+            if (!loggedIn) {
+                std::cout << "Invalid username or password. Try again.\n";
+            }
+        } while (!loggedIn);
+
+        std::cout << "Login successful! Welcome.\n";
+
+        // MAIN MENU LOOP
+        do {
+            std::cout << "\n=== Logistics Tracker ===\n";
+            std::cout << "[C] Create Delivery\n";
+            std::cout << "[R] Read Deliveries\n";
+            std::cout << "[U] Update Status\n";
+            std::cout << "[D] Delete Delivery\n";
+            std::cout << "[S] Search\n";
+            std::cout << "[T] Sort\n";
+            std::cout << "[L] Logout\n";
+            std::cout << "[E] Exit\n";
+            std::cout << "Enter choice: ";
+            std::cin >> choice;
+            choice = toupper(choice);
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            switch (choice) {
+                case 'C': createDelivery(); break;
+                case 'R': readDeliveries(); break;
+                case 'U': updateDeliveryStatus(); break;
+                case 'D': deleteDelivery(); break;
+                case 'S': searchByTracking(); break;
+                case 'T': sortByStatus(); break;
+                case 'L': loggedIn = false; break;
+                case 'E': saveToFile(users, deliveries); std::cout << "Exiting...\n"; break;
+                default: std::cout << "Invalid choice.\n";
+            }
+
+        } while (choice != 'E' && loggedIn);
 
     } while (choice != 'E');
 
