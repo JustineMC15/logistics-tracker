@@ -27,22 +27,21 @@ struct Delivery {
 // =====================
 
 // CREATE
-void createDelivery();
-
+void createDelivery(std::vector<Delivery>& logistics);
 // READ
-void readDeliveries();
+void readDeliveries(const std::vector<Delivery>& logistics);
 
 // UPDATE
-void updateDeliveryStatus();
+void updateDeliveryStatus(std::vector<Delivery>& logistics);
 
 // DELETE
-void deleteDelivery();
+void deleteDelivery(std::vector<Delivery>& logistics);
 
 // SEARCH (linear search by tracking number)
-void searchByTracking();
+void searchByTracking(const std::vector<Delivery>& logistics);
 
 // SORT (bubble sort by status)
-void sortByStatus();
+void sortByStatus(std::vector<Delivery> logistics);
 
 // =====================
 // FILE HANDLING FUNCTIONS
