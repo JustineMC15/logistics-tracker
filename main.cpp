@@ -18,10 +18,7 @@ int main() {
 
     std::vector<User> users;
     std::vector<Delivery> deliveries;
-    User testUser;
-    testUser.username = "admin";
-    testUser.password = "1234";
-    users.push_back(testUser);
+    loadFromFile(users, deliveries);
 
     bool loggedIn = false;
     char choice;
@@ -52,11 +49,15 @@ int main() {
                 std::cout << "Invalid username or password. Try again.\n";
             }
         } while (!loggedIn);
-
+        
         std::cout << "Login successful! Welcome.\n";
+        std::cout << "Press Enter to continue...";
+        std::cin.get();
+        system("cls");
 
         // MAIN MENU LOOP
         do {
+            system("cls");
             std::cout << "\n=== Logistics Tracker ===\n";
             std::cout << "[C] Create Delivery\n";
             std::cout << "[R] Read Deliveries\n";
@@ -81,8 +82,13 @@ int main() {
                 case 'E': saveToFile(users, deliveries); std::cout << "Exiting...\n"; break;
                 default: std::cout << "Invalid choice.\n";
             }
-
+            
+            if (choice != 'E' && loggedIn) {
+            std::cout << "\nPress Enter to continue...";
+            std::cin.get();
+    }
         } while (choice != 'E' && loggedIn);
+        
 
     } while (choice != 'E');
 
