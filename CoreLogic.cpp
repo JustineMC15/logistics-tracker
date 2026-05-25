@@ -188,8 +188,27 @@ void updateDeliveryStatus(std::vector<Delivery>& logistics) {
 
     for (int i = 0; i < logistics.size(); i++) {
         if (logistics[i].trackingNumber == input) {
-            std::cout << "New status: ";
-            getline(std::cin, logistics[i].status);
+            while(true) {
+        std::cout << "New status (Pending / In Transit / Delivered): ";
+        getline(std::cin, logistics[i].status);
+        for (int j = 0; j < logistics[i].status.length(); j++) {
+        logistics[i].status[j] = tolower(logistics[i].status[j]);
+        }
+        if (!logistics[i].status.empty()) {
+        logistics[i].status[0] = toupper(logistics[i].status[0]);
+        for (int j = 1; j < logistics[i].status.length(); j++) {
+            if (logistics[i].status[j-1] == ' ') {
+                logistics[i].status[j] = toupper(logistics[i].status[j]);
+            }
+            }
+        }
+
+        if (logistics[i].status == "Pending" || 
+            logistics[i].status == "In Transit" || 
+            logistics[i].status == "Delivered") break;
+    
+    std::cout << "Invalid! Please choose Pending, In Transit, or Delivered.\n";
+}
             found = true;
             break;
         }
