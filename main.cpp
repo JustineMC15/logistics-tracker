@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <limits>
+#include <cctype>
 
 int main() {
     std::ifstream testFile("logistics.csv");
@@ -19,7 +20,14 @@ int main() {
     std::vector<User> users;
     std::vector<Delivery> deliveries;
     loadFromFile(users, deliveries);
-
+    // Auto-create admin if no users exist
+    if (users.empty()) {
+    User admin;
+    admin.username = "admin";
+    admin.password = "1234";
+    users.push_back(admin);
+    std::cout << "No accounts exist, default admin account created.\n";
+    }
     bool loggedIn = false;
     char choice;
 
@@ -67,6 +75,7 @@ int main() {
             std::cout << "[T] Sort\n";
             std::cout << "[L] Logout\n";
             std::cout << "[E] Exit\n";
+            std::cout << "[A] Add User\n";
             std::cout << "Enter choice: ";
             std::cin >> choice;
             choice = toupper(choice);
@@ -76,22 +85,75 @@ int main() {
                 case 'R': readDeliveries(deliveries); break;
                 case 'U': updateDeliveryStatus(deliveries); break;
                 case 'D': deleteDelivery(deliveries); break;
-                case 'S': searchByTracking(deliveries); break;
-                case 'T': sortByStatus(deliveries); break;
-                case 'L': loggedIn = false; break;
+                case 'S': {std::string pin;
+                std::cout << "Enter PIN: ";
+                std::cin >> pin;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                if (pin == "1234") searchByTracking(deliveries);
+                else std::cout << "Invalid PIN.\n";break;}
+                case 'T': {std::string pin;
+                std::cout << "Enter PIN: ";
+                std::cin >> pin;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                if (pin == "1234") sortByStatus(deliveries);
+                else std::cout << "Invalid PIN.\n";break;}
+                case 'L': loggedIn = false;
+                system("cls");
+                break;
                 case 'E': saveToFile(users, deliveries); std::cout << "Exiting...\n"; break;
+                case 'A': {
+                    User u;
+                    while (true) {
+                        std::cout << "Enter new username: ";
+                        std::getline(std::cin, u.username);
+                        if (u.username.empty()) {
+                            std::cout << "Username cannot be empty.\n";
+                            continue;
+                        }
+                        bool duplicate = false;
+                        for (int i = 0; i < users.size(); i++) {
+                            if (users[i].username == u.username) {
+                                duplicate = true;
+                                break;
+                            }
+                        }
+                        if (duplicate) {
+                            std::cout << "Username already exists! Try another.\n";
+                            continue;
+                        }
+                        break;
+                    }
+                    while (true) {
+                        std::cout << "Enter new password: ";
+                        std::getline(std::cin, u.password);
+                        if (u.password.empty()) {
+                            std::cout << "Password cannot be empty.\n";
+                            continue;
+                        }
+                        std::string confirm;
+                        std::cout << "Confirm password: ";
+                        std::getline(std::cin, confirm);
+                        if (u.password != confirm) {
+                            std::cout << "Passwords do not match. Try again.\n";
+                            continue;
+                        }
+                        break;
+                    }
+                    users.push_back(u);
+                    std::cout << "User registered successfully!\n";
+                    break;
+                }
                 default: std::cout << "Invalid choice.\n";
             }
-            
+
             if (choice != 'E' && loggedIn) {
-            std::cout << "\nPress Enter to continue...";
-            std::cin.get();
-    }
+                std::cout << "\nPress Enter to continue...";
+                std::cin.get();
+            }
+
         } while (choice != 'E' && loggedIn);
-        
 
     } while (choice != 'E');
 
     return 0;
 }
-
