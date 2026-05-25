@@ -18,6 +18,45 @@ int getStatusPriority(std::string status) {
     return 0;
 }
 
+// HELPER: GET DISTANCE FROM OLOPSC HeadQuarter (New Gen Building) 
+
+double getDistanceFromHQ(const std::string& location) {
+    //landmarks and barangays within Marikina City
+    std::string landmarks[] = {
+        "Concepcion Uno Market",
+        "Marikina Heights Ayala Mall",
+        "Rancho Estate",
+        "Riverbanks Center",
+        "Marikina Sports Center",
+        "SM City Marikina",
+        "Fortune Factory",
+        "S&R Marikina",
+        "Parang Playground and Market",
+        "C&B Circle Mall"
+    };
+
+    double distances[] = {
+        3.2,  // Concepcion Uno Market 
+        2.1,  // Marikina Heights Ayala Mall
+        2.8,  // Rancho Estate
+        6.2,  // Riverbanks Center 
+        3.5,  // Marikina Sports Center 
+        5.8,  // SM City Marikina 
+        2.5,  // Fortune Factory
+        4.5,  // S&R Marikina
+        2.1,  // Parang Playground and Market 
+        2.3   // C&B Circle Mall
+    };
+
+    for (int i = 0; i < 10; i++) {
+        if (location == landmarks[i]) {
+            return distances[i];
+        }
+    }
+
+    return -1.0; // Return -1 if landmark is not  found in the zone 
+}
+
 // CREATE DELIVERY (C)
 
 void createDelivery(std::vector<Delivery>& logistics) {
@@ -45,6 +84,17 @@ void createDelivery(std::vector<Delivery>& logistics) {
     logistics.push_back(d);
 
     std::cout << "Delivery created successfully!\n";
+    
+    // Check and print HQ distance references upon creation
+    double originDist = getDistanceFromHQ(d.origin);
+    double destDist = getDistanceFromHQ(d.destination);
+    
+    if (originDist != -1.0) {
+        std::cout << "[HQ Link] Origin is " << originDist << " km from OLOPSC New Gen Building.\n";
+    }
+    if (destDist != -1.0) {
+        std::cout << "[HQ Link] Destination is " << destDist << " km from OLOPSC New Gen Building.\n";
+    }
 }
 
 // READ ALL DELIVERIES (R)
@@ -62,6 +112,12 @@ void readDeliveries(const std::vector<Delivery>& logistics) {
         std::cout << "Origin: " << logistics[i].origin << "\n";
         std::cout << "Destination: " << logistics[i].destination << "\n";
         std::cout << "Status: " << logistics[i].status << "\n";
+        
+        // Show distance if the location matches to the landmarks
+        double destDist = getDistanceFromHQ(logistics[i].destination);
+        if (destDist != -1.0) {
+            std::cout << "Distance from OLOPSC HQ: " << destDist << " km\n";
+        }
     }
 }
 
@@ -86,6 +142,12 @@ void searchByTracking(const std::vector<Delivery>& logistics) {
             std::cout << "Origin: " << logistics[i].origin << "\n";
             std::cout << "Destination: " << logistics[i].destination << "\n";
             std::cout << "Status: " << logistics[i].status << "\n";
+            
+            double destDist = getDistanceFromHQ(logistics[i].destination);
+            if (destDist != -1.0) {
+                std::cout << "Distance from OLOPSC HQ: " << destDist << " km\n";
+            }
+            
             found = true;
             break;
         }
