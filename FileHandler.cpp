@@ -35,12 +35,15 @@ void loadFromFile(std::vector<User>& users, std::vector<Delivery>& deliveries) {
             getline(ss, d.origin, ',');
             getline(ss, d.destination, ',');
             getline(ss, d.status, ',');
+            std::string distStr;
+            getline(ss, distStr, ',');
+            d.distance = distStr.empty() ? 0.0 : std::stod(distStr);
             deliveries.push_back(d);
         }
-    }
-    file.close();
+            
 }
-
+file.close();
+}
 // SAVE TO FILE (S) — writes all users and deliveries back to logistics.csv on exit:
 
 void saveToFile(const std::vector<User>& users, const std::vector<Delivery>& deliveries) {
@@ -56,7 +59,8 @@ void saveToFile(const std::vector<User>& users, const std::vector<Delivery>& del
             << d.receiverName << ","
             << d.origin << ","
             << d.destination << ","
-            << d.status << "\n";
+            << d.status << ","
+            << d.distance << "\n";
     }
 
     out.close();

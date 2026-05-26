@@ -9,6 +9,7 @@
 #include <cctype>
 
 int main() {
+    system("cls");
     std::ifstream testFile("logistics.csv");
     if (!testFile.is_open()) {
         std::cout << "SYSTEM ERROR: Database file not found. Creating new file...\n";

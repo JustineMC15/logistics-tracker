@@ -105,11 +105,19 @@ void createDelivery(std::vector<Delivery>& logistics) {
         }
     }
 
+    while(true) {
     std::cout << "Sender Name: ";
     getline(std::cin, d.senderName);
+    if (d.senderName.length() > 0 && d.senderName.length() <= 51) break;
+    std::cout << "Invalid! Sender name must not be empty or longer than 50 characters!\n";
+    }
 
+    while(true) {
     std::cout << "Receiver Name: ";
     getline(std::cin, d.receiverName);
+    if (d.receiverName.length() > 0 && d.receiverName.length() <= 51) break;
+    std::cout << "Invalid! Receiver name must not be empty or longer than 50 characters!!\n";
+    }
 
     // LALAMOVE STYLE PICKUP/DROPOFF
     int pickupIndex = selectLocation("PICKUP");
@@ -117,29 +125,31 @@ void createDelivery(std::vector<Delivery>& logistics) {
 
     d.origin = locations[pickupIndex].name;
     d.destination = locations[dropoffIndex].name;
+    d.distance = locations[pickupIndex].distanceFromHQ;
 
     // status
-    while (true) {
-        std::cout << "Status (Pending / In Transit / Delivered): ";
-        getline(std::cin, d.status);
-
-        if (d.status == "Pending" ||
-            d.status == "In Transit" ||
-            d.status == "Delivered") {
-            break;
+    // Readded
+    while(true) {
+    std::cout << "Status (Pending / In Transit / Delivered): ";
+    getline(std::cin, d.status);\
+    for (int i = 0; i < d.status.length(); i++) {
+    d.status[i] = tolower(d.status[i]);
+    }
+    if (!d.status.empty()) {
+    d.status[0] = toupper(d.status[0]);
+    for (int i = 1; i < d.status.length(); i++) {
+        if (d.status[i-1] == ' ') {
+            d.status[i] = toupper(d.status[i]);
         }
-
-        std::cout << "Invalid status.\n";
+    }
+}
+    if (d.status == "Pending" || d.status == "In Transit" || d.status == "Delivered") break;
+    std::cout << "Invalid! Please choose Pending, In Transit, or Delivered.\n";
     }
 
     logistics.push_back(d);
 
     std::cout << "Delivery created successfully!\n";
-
-    double dist = getDistanceFromHQ(d.origin);
-    if (dist != -1.0) {
-        std::cout << "Pickup distance from HQ: " << dist << " km\n";
-    }
 }
 
 // =====================
@@ -161,11 +171,6 @@ void readDeliveries(const std::vector<Delivery>& logistics) {
         std::cout << "Pickup: " << d.origin << "\n";
         std::cout << "Dropoff: " << d.destination << "\n";
         std::cout << "Status: " << d.status << "\n";
-
-        double dist = getDistanceFromHQ(d.origin);
-        if (dist != -1.0) {
-            std::cout << "Distance from HQ: " << dist << " km\n";
-        }
     }
 }
 
@@ -198,21 +203,33 @@ void searchByTracking(const std::vector<Delivery>& logistics) {
 // SORT (NOW BY DISTANCE, STILL COMPATIBLE NAME)
 // =====================
 
-void sortByStatus(std::vector<Delivery> logistics) {
+void sortByStatus(std::vector<Delivery>& logistics) {
+    if (logistics.empty()) {
+        std::cout << "No records found.\n";
+        return;
+    }
 
-    std::sort(logistics.begin(), logistics.end(),
-        [](const Delivery& a, const Delivery& b) {
+    // Selection Sort by distance
+    for (int i = 0; i < logistics.size() - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1; j < logistics.size(); j++) {
+            if (logistics[j].distance < logistics[minIndex].distance) {
+                minIndex = j;
+            }
+        }
+        if (minIndex != i) {
+            std::swap(logistics[i], logistics[minIndex]);
+        }
+    }
 
-            double da = getDistanceFromHQ(a.origin);
-            double db = getDistanceFromHQ(b.origin);
-
-            if (da == -1.0) da = 9999;
-            if (db == -1.0) db = 9999;
-
-            return da < db;
-        });
-
-    std::cout << "\nSorted by distance from HQ.\n";
+    // Display sorted results
+    std::cout << "\n=== SORTED BY DISTANCE FROM HQ ===\n";
+    for (int i = 0; i < logistics.size(); i++) {
+        std::cout << "\n----------------------\n";
+        std::cout << "Tracking: " << logistics[i].trackingNumber << "\n";
+        std::cout << "Pickup: " << logistics[i].origin << "\n";
+        std::cout << "Status: " << logistics[i].status << "\n";
+    }
 }
 
 // =====================
@@ -220,34 +237,52 @@ void sortByStatus(std::vector<Delivery> logistics) {
 // =====================
 
 void updateDeliveryStatus(std::vector<Delivery>& logistics) {
+    if (logistics.empty()) {
+        std::cout << "No records found.\n";
+        return;
+    }
 
     std::string input;
-    std::cout << "Enter tracking number: ";
+    std::cout << "Enter tracking number to update: ";
     std::cin >> input;
-    std::cin.ignore();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    for (auto &d : logistics) {
-        if (d.trackingNumber == input) {
+    bool found = false;
 
-            while (true) {
-                std::cout << "New status: ";
-                getline(std::cin, d.status);
-
-                if (d.status == "Pending" ||
-                    d.status == "In Transit" ||
-                    d.status == "Delivered") {
-                    break;
-                }
-
-                std::cout << "Invalid.\n";
+    for (int i = 0; i < logistics.size(); i++) {
+        if (logistics[i].trackingNumber == input) {
+            while(true) {
+        std::cout << "New status (Pending / In Transit / Delivered): ";
+        getline(std::cin, logistics[i].status);
+        for (int j = 0; j < logistics[i].status.length(); j++) {
+        logistics[i].status[j] = tolower(logistics[i].status[j]);
+        }
+        if (!logistics[i].status.empty()) {
+        logistics[i].status[0] = toupper(logistics[i].status[0]);
+        for (int j = 1; j < logistics[i].status.length(); j++) {
+            if (logistics[i].status[j-1] == ' ') {
+                logistics[i].status[j] = toupper(logistics[i].status[j]);
             }
+            }
+        }
 
-            std::cout << "Updated.\n";
-            return;
+        if (logistics[i].status == "Pending" || 
+            logistics[i].status == "In Transit" || 
+            logistics[i].status == "Delivered") break;
+    
+    std::cout << "Invalid! Please choose Pending, In Transit, or Delivered.\n";
+}
+            found = true;
+            break;
         }
     }
 
-    std::cout << "Not found.\n";
+    if (!found) {
+        std::cout << "Delivery not found.\n";
+        return;
+    }
+
+    std::cout << "Status updated successfully!\n";
 }
 
 // =====================

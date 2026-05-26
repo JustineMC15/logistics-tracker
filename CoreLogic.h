@@ -20,6 +20,7 @@ struct Delivery {
     std::string origin;
     std::string destination;
     std::string status;
+    double distance;
 };
 
 // =====================
@@ -41,7 +42,7 @@ void deleteDelivery(std::vector<Delivery>& logistics);
 void searchByTracking(const std::vector<Delivery>& logistics);
 
 // SORT (bubble sort by status)
-void sortByStatus(std::vector<Delivery> logistics);
+void sortByStatus(std::vector<Delivery>& logistics);
 
 // =====================
 // FILE HANDLING FUNCTIONS
