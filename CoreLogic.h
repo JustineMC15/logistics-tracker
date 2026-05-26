@@ -42,7 +42,7 @@ void deleteDelivery(std::vector<Delivery>& logistics);
 void searchByTracking(const std::vector<Delivery>& logistics);
 
 // SORT (bubble sort by status)
-void sortByStatus(std::vector<Delivery>& logistics);
+void sortByDistance(std::vector<Delivery>& logistics);
 
 // =====================
 // FILE HANDLING FUNCTIONS

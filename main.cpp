@@ -82,26 +82,39 @@ int main() {
             choice = toupper(choice);
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             switch (choice) {
+                // Call the create delivery function
                 case 'C': createDelivery(deliveries); break;
+                // Call the read delivery function
                 case 'R': readDeliveries(deliveries); break;
+                // Call the update delivery status function
                 case 'U': updateDeliveryStatus(deliveries); break;
+                // Call the delete delivery function
                 case 'D': deleteDelivery(deliveries); break;
-                case 'S': {std::string pin;
-                std::cout << "Enter PIN: ";
-                std::cin >> pin;
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                if (pin == "1234") searchByTracking(deliveries);
-                else std::cout << "Invalid PIN.\n";break;}
-                case 'T': {std::string pin;
-                std::cout << "Enter PIN: ";
-                std::cin >> pin;
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                if (pin == "1234") sortByStatus(deliveries);
-                else std::cout << "Invalid PIN.\n";break;}
+                // Call the search by tracking number function
+                case 'S': {
+                    std::string pin;
+                    std::cout << "Enter PIN: ";
+                    std::getline(std::cin, pin);
+                    if (pin == "1234") searchByTracking(deliveries);
+                    else std::cout << "Invalid PIN.\n";
+                    break;
+                }
+                // Call the sort by distance function
+                case 'T': {
+                    std::string pin;
+                    std::cout << "Enter PIN: ";
+                    std::getline(std::cin, pin);
+                    if (pin == "1234") sortByDistance(deliveries);
+                    else std::cout << "Invalid PIN.\n";
+                    break;
+                }
+                // Log out
                 case 'L': loggedIn = false;
                 system("cls");
                 break;
+                // Save to file and exit the program
                 case 'E': saveToFile(users, deliveries); std::cout << "Exiting...\n"; break;
+                // Create a new user
                 case 'A': {
                     User u;
                     while (true) {

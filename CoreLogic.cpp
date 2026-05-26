@@ -180,10 +180,27 @@ void readDeliveries(const std::vector<Delivery>& logistics) {
 
 void searchByTracking(const std::vector<Delivery>& logistics) {
 
+    if (logistics.empty()) {
+    std::cout << "No records found.\n";
+    return;
+    }
+
     std::string input;
+    while (true) {
     std::cout << "Enter tracking number: ";
-    std::cin >> input;
-    std::cin.ignore();
+    std::getline(std::cin, input);
+    
+    // Trim whitespace
+    while (!input.empty() && (input[0] == ' ' || input[0] == '\r' || input[0] == '\n')) {
+        input.erase(input.begin());
+    }
+    while (!input.empty() && (input.back() == ' ' || input.back() == '\r' || input.back() == '\n')) {
+        input.pop_back();
+    }
+    
+    if (!input.empty()) break;
+    std::cout << "Tracking number cannot be empty.\n";
+    }
 
     for (auto &d : logistics) {
         if (d.trackingNumber == input) {
@@ -203,7 +220,7 @@ void searchByTracking(const std::vector<Delivery>& logistics) {
 // SORT (NOW BY DISTANCE, STILL COMPATIBLE NAME)
 // =====================
 
-void sortByStatus(std::vector<Delivery>& logistics) {
+void sortByDistance(std::vector<Delivery>& logistics) {
     if (logistics.empty()) {
         std::cout << "No records found.\n";
         return;
@@ -243,10 +260,21 @@ void updateDeliveryStatus(std::vector<Delivery>& logistics) {
     }
 
     std::string input;
-    std::cout << "Enter tracking number to update: ";
-    std::cin >> input;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
+    while (true) {
+    std::cout << "Enter tracking number: ";
+    std::getline(std::cin, input);
+    
+    // Trim whitespace
+    while (!input.empty() && (input[0] == ' ' || input[0] == '\r' || input[0] == '\n')) {
+        input.erase(input.begin());
+    }
+    while (!input.empty() && (input.back() == ' ' || input.back() == '\r' || input.back() == '\n')) {
+        input.pop_back();
+    }
+    
+    if (!input.empty()) break;
+    std::cout << "Tracking number cannot be empty.\n";
+}
     bool found = false;
 
     for (int i = 0; i < logistics.size(); i++) {
@@ -292,8 +320,21 @@ void updateDeliveryStatus(std::vector<Delivery>& logistics) {
 void deleteDelivery(std::vector<Delivery>& logistics) {
 
     std::string input;
+    while (true) {
     std::cout << "Enter tracking number: ";
-    std::cin >> input;
+    std::getline(std::cin, input);
+    
+    // Trim whitespace
+    while (!input.empty() && (input[0] == ' ' || input[0] == '\r' || input[0] == '\n')) {
+        input.erase(input.begin());
+    }
+    while (!input.empty() && (input.back() == ' ' || input.back() == '\r' || input.back() == '\n')) {
+        input.pop_back();
+    }
+    
+    if (!input.empty()) break;
+    std::cout << "Tracking number cannot be empty.\n";
+}
 
     for (int i = 0; i < logistics.size(); i++) {
         if (logistics[i].trackingNumber == input) {
